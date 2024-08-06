@@ -4,6 +4,17 @@
 # Ignorar deployment
 .deployment
 
-.xlsx
-.txt
-.csv
+#Ignore all xlsx files
+*.xlsx
+
+#Ignore all pdf file
+*.pdf
+
+#Ignore all pdf file
+*.csv
+
+#Ignore all pdf file
+*.txt
+
+#Ignore all pdf file
+*.xls
