@@ -3,3 +3,7 @@
 
 # Ignorar deployment
 .deployment
+
+.xlsx
+.txt
+.csv
