@@ -1,0 +1,162 @@
+{% from 'macros/sidebar.html' import SideBar %}
+{% from 'macros/table.html' import Table, Tables %}
+{% from 'macros/card.html' import card %}
+
+{% extends "base.html" %}
+{% block title %} DNED {% endblock %}
+{% block Content %}
+
+<header class="sidebar">
+    {{ SideBar() }}
+    </header>
+
+    <div class="content-Menu">
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning" role="alert">
+                {{message}}
+            </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <h1>Excel to csv</h1>
+        <hr />
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="m-2">¿Cómo realizar la trasnformacion a csv?</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="width: 100%;">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <ol class="pl-3 text-left">
+                        <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt ipsam aliquid.</li>
+                        <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt ipsam aliquid..</li>
+                        <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt ipsam aliquid..</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="row d-flex justify-content-around">
+            <!--
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h2 class="m-2">Descargar archivo</h2>
+                    </div>
+                </div>
+            </div>
+            -->
+            
+            <!--
+            <div class="col-sm-4">
+                {{ card(
+                    url_for('carga.upload'),
+                    url_for('static', filename='img/icons/excel.png'),
+                    "Plantilla cargas inventarios",
+                    "Formato con el cual podrá subir los datos de su inventario: fincas, potreros, lotes y ganado.",
+                    "Para descargar el formato, simplemente haga clic en la imagen."
+                ) }}
+            </div>
+            -->
+            
+            <!--
+            <div class="col-sm-4">
+                {{ card(
+                    url_for('carga.upload'),
+                    url_for('static', filename='img/icons/excel.png'),
+                    "Plantilla ejemplo de cargas inventarios",
+                    "Formato ya rellenado con el cual se podrá guiar para rellenar sus inventarios.\n",
+                    "Para descargar el formato, simplemente haga clic en la imagen."
+                ) }}
+            </div>
+            -->
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="m-2">Subir Archivo Estudiantes</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="width: 100%;">
+            <form class="border p-3 text-black text-center" action="/Create-csv" method="POST" enctype="multipart/form-data"> <!-- Agregamos la clase 'card' para el marco y 'p-3' para el espacio interno -->
+                <div class="mb-3">
+                    <label for="uploadFile" class="form-label">Seleccionar archivo</label>
+                    <input class="form-control" type="file" id="uploadFile" name="uploadFile" accept=".xlsm,.xlsx">
+                </div>
+                <div class="text-center"> <!-- Alineación al centro -->
+                    <button type="submit" class="btn btn-light">Subir Archivo</button> <!-- Cambié el color del botón a claro para mayor contraste -->
+                </div>
+            </form>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="m-2">Subir Archivos Merge</h2>
+                    <h5 class="m-2">No importa el orden</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="width: 100%;">
+            <form class="border p-3 text-black text-center" action="/Create-Merge" method="POST" enctype="multipart/form-data"> <!-- Agregamos la clase 'card' para el marco y 'p-3' para el espacio interno -->
+                <div class="mb-5 mt-10">
+                    <label for="uploadFile" class="form-label">Egresados</label>
+                    <input class="form-control" type="file" id="uploadFile1" name="uploadFile1" accept=".xlsm,.xlsx,.csv">
+                </div>
+                <hr />
+                <div class="mb-5 mt-10">
+                    <label for="uploadFile" class="form-label">Estudiantes</label>
+                    <input class="form-control" type="file" id="uploadFile2" name="uploadFile2" accept=".xlsm,.xlsx,.csv">
+                </div>
+                <hr />
+                <div class="mb-5 mt-10">
+                    <label for="uploadFile" class="form-label">WorkSpace</label>
+                    <input class="form-control" type="file" id="uploadFile3" name="uploadFile3" accept=".xlsm,.xlsx,.csv">
+                </div>
+                <hr />
+                <div class="mb-5 mt-10">
+                    <label for="uploadFile" class="form-label">Docentes</label>
+                    <input class="form-control" type="file" id="uploadFile4" name="uploadFile4" accept=".xlsm,.xlsx,.csv">
+                </div>
+                <hr />
+                <hr />
+                <div class="mb-5 mt-10">
+                    <label for="uploadFile" class="form-label">LDAP</label>
+                    <input class="form-control" type="file" id="uploadFile5" name="uploadFile5" accept=".xlsm,.xlsx,.csv">
+                </div>
+                <hr />
+                <div class="text-center"> <!-- Alineación al centro -->
+                    <button type="submit" class="btn btn-light">Subir Archivo</button> <!-- Cambié el color del botón a claro para mayor contraste -->
+                </div>
+            </form>
+        </div>
+
+    </div>
+    
+    <!-- Vendor JS Files -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/glightbox/js/glightbox.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/isotope-layout/isotope.pkgd.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/php-email-form/validate.js') }}"></script>
+
+    <!-- Template Main JS File -->
+    <script src="{{ url_for('static', filename='js/main.js') }}" type="text/javascript"></script>
+{% endblock %}

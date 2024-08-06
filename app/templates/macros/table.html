@@ -1,0 +1,49 @@
+{% macro Table(headings, data) %}
+<table class="table table-hover table-striped information-table">
+    <thead class="bg-primary">
+      <tr>
+        {% for header in headings %}
+        <th scope="col"> {{header}} </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr scope="row">
+        {% for cell in row %}
+        <td>{{ cell }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}
+
+{% macro Table2(headings, data) %}
+<table class="table table-hover table-striped information-table2">
+    <thead class="bg-primary">
+      <tr>
+        {% for header in headings %}
+        <th scope="col"> {{header}} </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr scope="row">
+        {% for cell in row %}
+        <td>{{ cell }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}
+
+{% macro Tables(data) %}
+  <div class="information-tables">
+    {% for table in data %}
+      {{ Table2(table[0], table[1]) }}
+    {% endfor %}
+  </div>
+{% endmacro %}

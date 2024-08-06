@@ -1,0 +1,25 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1 0 auto;
+}
+
+.footer,
+footer,
+#footer {
+    flex-shrink: 0;
+}
+
+.navbar > ul > li {
+    position: relative;
+    white-space: nowrap;
+    margin: 0 20px;
+}

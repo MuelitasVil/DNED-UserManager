@@ -1,0 +1,19 @@
+{% macro card(url_for, image_src, card_title, card_text, card_exp) %}
+  <div class="text-center">
+    <div class="card p-3" style="width: 18rem;">
+        <h5 class="card-title">{{ card_title }}</h5>
+        <div>
+        </div>
+        <a href="{{ url_for }}">
+        <img 
+          src="{{ image_src }}" 
+          class="img-fluid mx-auto"
+          alt="Descargar">
+      </a>
+      <div class="card-body">
+        <p class="mb-0">{{ card_text }}</p>
+        <footer class="blockquote-footer mt-2">{{ card_exp }}</footer>
+    </div>
+    </div>
+  </div>
+{% endmacro %}
