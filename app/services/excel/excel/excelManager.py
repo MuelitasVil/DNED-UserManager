@@ -62,9 +62,16 @@ class ExcelManager:
         hojaEgresado = ws.create_sheet("Egresados")
         hojaLdap = ws.create_sheet("OnlyLdap")
         hojaWorkSpace = ws.create_sheet("OnlyWorkSpace")
+        hojaPregrado = ws.create_sheet("Only Pregrado")
+        hojaPostGrado = ws.create_sheet("Only Postgrado")
+        hojaDocente = ws.create_sheet("Only Docente")
+        hojaAministrativo = ws.create_sheet("Only Administrativo")
+        hojaSinConexion = ws.create_sheet("No conexion")
         
         columnas = self.get_columnas_usuarios()
         cantidadColumnas = len(columnas)
+
+        # Rellenar columnas de los archivos
         for c in range(cantidadColumnas):
             column = get_column_letter(c + 1)
             hojaUsuario[column + "1"].value = columnas[c]
@@ -72,12 +79,22 @@ class ExcelManager:
                 hojaEgresado[column + "1"].value = columnas[c]
                 hojaWorkSpace[column + "1"].value = columnas[c]
                 hojaLdap[column + "1"].value = columnas[c]
+                hojaPregrado[column + "1"].value = columnas[c]
+                hojaPostGrado[column + "1"].value = columnas[c]
+                hojaDocente[column + "1"].value = columnas[c]
+                hojaAministrativo[column + "1"].value = columnas[c]
+                hojaSinConexion[column + "1"].value = columnas[c]
 
         # Ingresar Columnas 
         rowUsuario = 2
         rowEgresado = 2
         rowLdap = 2
         rowWorkSpace = 2
+        rowPregrado = 2
+        rowPostgrado = 2
+        rowDocente = 2 
+        rowAdministrativo = 2
+        rowNoConexion = 2
         for Correo in Usuarios:
 
             if rowUsuario % 50000 == 0:
@@ -96,6 +113,7 @@ class ExcelManager:
             hojaUsuario["K" + str(rowUsuario)] = Usuarios[Correo]["IsEgresado"] 
             
             if Usuarios[Correo]["OnlyWorkSpace"]:
+                # Esto se puede volver una funccion pero me dio pereza :'v
                 hojaWorkSpace["A" + str(rowWorkSpace)] = Correo
                 hojaWorkSpace["B" + str(rowWorkSpace)] = Usuarios[Correo]["Nombre"]
                 hojaWorkSpace["C" + str(rowWorkSpace)] = Usuarios[Correo]["Apellido"] 
@@ -116,7 +134,43 @@ class ExcelManager:
                 hojaEgresado["D" + str(rowEgresado)] = Usuarios[Correo]["UltimaConexion"] 
                 hojaEgresado["E" + str(rowEgresado)] = Usuarios[Correo]["Almacenamiento"]
                 rowEgresado += 1
-            
+            elif Usuarios[Correo]["IsPregrado"]:
+                hojaPregrado["A" + str(rowPregrado)] = Correo
+                hojaPregrado["B" + str(rowPregrado)] = Usuarios[Correo]["Nombre"]
+                hojaPregrado["C" + str(rowPregrado)] = Usuarios[Correo]["Apellido"] 
+                hojaPregrado["D" + str(rowPregrado)] = Usuarios[Correo]["UltimaConexion"] 
+                hojaPregrado["E" + str(rowPregrado)] = Usuarios[Correo]["Almacenamiento"]
+                rowPregrado += 1
+            elif Usuarios[Correo]["IsPostgrado"]:
+                hojaPostGrado["A" + str(rowPostgrado)] = Correo
+                hojaPostGrado["B" + str(rowPostgrado)] = Usuarios[Correo]["Nombre"]
+                hojaPostGrado["C" + str(rowPostgrado)] = Usuarios[Correo]["Apellido"] 
+                hojaPostGrado["D" + str(rowPostgrado)] = Usuarios[Correo]["UltimaConexion"] 
+                hojaPostGrado["E" + str(rowPostgrado)] = Usuarios[Correo]["Almacenamiento"]
+                rowPostgrado += 1
+            elif Usuarios[Correo]["IsDocente"]: 
+                hojaDocente["A" + str(rowDocente)] = Correo
+                hojaDocente["B" + str(rowDocente)] = Usuarios[Correo]["Nombre"]
+                hojaDocente["C" + str(rowDocente)] = Usuarios[Correo]["Apellido"] 
+                hojaDocente["D" + str(rowDocente)] = Usuarios[Correo]["UltimaConexion"] 
+                hojaDocente["E" + str(rowDocente)] = Usuarios[Correo]["Almacenamiento"]
+                rowDocente += 1
+            elif Usuarios[Correo]["IsAdministrativo"]:
+                hojaAministrativo["A" + str(rowAdministrativo)] = Correo
+                hojaAministrativo["B" + str(rowAdministrativo)] = Usuarios[Correo]["Nombre"]
+                hojaAministrativo["C" + str(rowAdministrativo)] = Usuarios[Correo]["Apellido"] 
+                hojaAministrativo["D" + str(rowAdministrativo)] = Usuarios[Correo]["UltimaConexion"] 
+                hojaAministrativo["E" + str(rowAdministrativo)] = Usuarios[Correo]["Almacenamiento"]
+                rowAdministrativo += 1
+            elif Usuarios[Correo]["NoConexion"]:
+                hojaSinConexion["A" + str(rowNoConexion)] = Correo
+                hojaSinConexion["B" + str(rowNoConexion)] = Usuarios[Correo]["Nombre"]
+                hojaSinConexion["C" + str(rowNoConexion)] = Usuarios[Correo]["Apellido"] 
+                hojaSinConexion["D" + str(rowNoConexion)] = Usuarios[Correo]["UltimaConexion"] 
+                hojaSinConexion["E" + str(rowNoConexion)] = Usuarios[Correo]["Almacenamiento"]
+                hojaSinConexion["F" + str(rowNoConexion)] = Usuarios[Correo][ArchivosExcel.Ldap.TipoArchivo]
+                rowNoConexion += 1
+                     
             rowUsuario += 1
 
         print(" Excel generado ")
@@ -174,17 +228,17 @@ class ExcelManager:
         # Encontrar cual Archivo es 
         nombreHoja = ""
         if filename == ArchivosExcel.Docentes.NombreArchivo:
-            tipoArchivo = ArchivosExcel.Docentes
-            nombreHoja = tipoArchivo.NombreHoja
+            Archivo = ArchivosExcel.Docentes
+            nombreHoja = Archivo.NombreHoja
         if filename == ArchivosExcel.Egresados.NombreArchivo:
-            tipoArchivo = ArchivosExcel.Egresados
-            nombreHoja = tipoArchivo.NombreHoja
+            Archivo = ArchivosExcel.Egresados
+            nombreHoja = Archivo.NombreHoja
         if filename == ArchivosExcel.EstudiantesActivos.NombreArchivo:
-            tipoArchivo = ArchivosExcel.EstudiantesActivos
-            nombreHoja = tipoArchivo.NombreHoja
+            Archivo = ArchivosExcel.EstudiantesActivos
+            nombreHoja = Archivo.NombreHoja
         if filename == ArchivosExcel.WorkSpace.NombreArchivo:
-            tipoArchivo = ArchivosExcel.WorkSpace
-            nombreHoja = tipoArchivo.NombreHoja
+            Archivo = ArchivosExcel.WorkSpace
+            nombreHoja = Archivo.NombreHoja
 
         information = excelFile.get_sheet_by_name(nombreHoja)
         cantOfRows = len(list(information.rows))
@@ -194,17 +248,17 @@ class ExcelManager:
         Datos = False
 
         for row in range(filaInicial ,cantOfRows):
-            columnCorreo = get_column_letter(tipoArchivo.Correo + 1)
+            columnCorreo = get_column_letter(Archivo.Correo + 1)
             Correo = information[columnCorreo + str(row)].value
             
             if Correo not in Usuarios:
                 self.create_user_dict(Correo, Usuarios)
                 
-            if ArchivosExcel.WorkSpace.TipoArchivo == tipoArchivo.TipoArchivo:
-                columnNombre = get_column_letter(tipoArchivo.Nombre + 1)
-                columnApellido = get_column_letter(tipoArchivo.Apellidos + 1)
-                columnUltimaConexion = get_column_letter(tipoArchivo.UltimaConexion + 1)
-                columnAlmacenamiento = get_column_letter(tipoArchivo.Almacenamiento + 1)
+            if ArchivosExcel.WorkSpace.TipoArchivo == Archivo.TipoArchivo:
+                columnNombre = get_column_letter(Archivo.Nombre + 1)
+                columnApellido = get_column_letter(Archivo.Apellidos + 1)
+                columnUltimaConexion = get_column_letter(Archivo.UltimaConexion + 1)
+                columnAlmacenamiento = get_column_letter(Archivo.Almacenamiento + 1)
                 
                 Nombre = information[columnNombre + str(row)].value
                 Apellido = information[columnApellido + str(row)].value
@@ -216,17 +270,39 @@ class ExcelManager:
                 Usuarios[Correo]["UltimaConexion"] = UltimaConexion
                 Usuarios[Correo]["Almacenamiento"] = Almacenamiento
 
-            if (tipoArchivo.TipoArchivo != ArchivosExcel.WorkSpace.TipoArchivo): 
+            if (Archivo.TipoArchivo != ArchivosExcel.WorkSpace.TipoArchivo): 
                 Usuarios[Correo]["OnlyWorkSpace"] = False
 
-            if (tipoArchivo.TipoArchivo != ArchivosExcel.Ldap.TipoArchivo):
+            if (Archivo.TipoArchivo != ArchivosExcel.Ldap.TipoArchivo):
                 Usuarios[Correo]["OnlyLdap"] = False
 
-            if (tipoArchivo.TipoArchivo != ArchivosExcel.Egresados.TipoArchivo
-                and tipoArchivo.TipoArchivo != ArchivosExcel.WorkSpace.TipoArchivo):
+            if (Archivo.TipoArchivo != ArchivosExcel.Egresados.TipoArchivo
+                and Archivo.TipoArchivo != ArchivosExcel.WorkSpace.TipoArchivo):
                  Usuarios[Correo]["IsEgresado"] = False
 
-            Usuarios[Correo][tipoArchivo.TipoArchivo] = True
+            if Archivo.TipoArchivo == ArchivosExcel.EstudiantesActivos.TipoArchivo:
+                columnNivel = get_column_letter(Archivo.Nivel + 1)
+                Nivel = str(information[columnNivel + str(row)].value).strip()
+                if Nivel ==  "PREGRADO":
+                    Usuarios[Correo]["IsPregrado"] = True
+                elif Nivel == "POSGRADO":
+                    Usuarios[Correo]["IsPostgrado"] = True
+
+            if Archivo.TipoArchivo == ArchivosExcel.Docentes.TipoArchivo:
+                columnVinculacion = get_column_letter(Archivo.Vinculacion + 1)
+                Vinculacion = str(information[columnVinculacion + str(row)].value)
+                if "DOCENTE" in Vinculacion:
+                    Usuarios[Correo]["IsDocente"] = True
+                else:
+                    Usuarios[Correo]["IsAdministrativo"] = True
+
+            if Archivo.TipoArchivo == ArchivosExcel.WorkSpace.TipoArchivo:
+                columnConexion = get_column_letter(Archivo.UltimaConexion + 1)
+                Conexion = str(information[columnConexion + str(row)].value)
+                if Conexion.strip() == "Never logged in":
+                    Usuarios[Correo]["NoConexion"] = True
+
+            Usuarios[Correo][Archivo.TipoArchivo] = True
         
     def create_user_dict(self, Correo, Usuarios):
         Usuarios[Correo] = {}
@@ -241,8 +317,13 @@ class ExcelManager:
         Usuarios[Correo]["UltimaConexion"] = ""
         Usuarios[Correo]["Almacenamiento"] = ""
         Usuarios[Correo]["IsEgresado"] = True
+        Usuarios[Correo]["IsPregrado"] = False
+        Usuarios[Correo]["IsPostgrado"] = False
+        Usuarios[Correo]["IsDocente"] = False
+        Usuarios[Correo]["IsAdministrativo"] = False
         Usuarios[Correo]["OnlyWorkSpace"] = True
         Usuarios[Correo]["OnlyLdap"] = True
+        Usuarios[Correo]["NoConexion"] = False
 
     def get_columnas_usuarios(self):
 
