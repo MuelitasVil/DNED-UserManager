@@ -33,7 +33,7 @@ def upload():
         return render_template("DatosInformacion/cargas.html")
     
     excel = ExcelManager(file = file)
-    respuesta = excel.get_csv()
+    respuesta = excel.FilterEstudiantes()
     
     if respuesta != True:
         flash("Se han creado los csv")    
@@ -53,16 +53,16 @@ def Merge():
         "file5" : request.files['uploadFile5']
     }
 
-    for file in files:
-        archivo = files[file]
-        if not archivo:
-            flash('Por favor ingrese su archivo en ' + file)
-            return render_template("DatosInformacion/cargas.html")
-            
-        fileName = secure_filename(archivo.filename)
-        if not VerifyExel(fileName):
-            flash('Por favor ingrese su archivo excel para cargas masivas')
-            return render_template("DatosInformacion/cargas.html")
+    #for file in files:
+    #    archivo = files[file]
+    #    if not archivo:
+    #        flash('Por favor ingrese su archivo en ' + file)
+    #        return render_template("DatosInformacion/cargas.html")
+    #        
+    #    fileName = secure_filename(archivo.filename)
+    #    if not VerifyExel(fileName):
+    #        flash('Por favor ingrese su archivo excel')
+    #        return render_template("DatosInformacion/cargas.html")
     
     excel = ExcelManager(files = list(files.values()))
     respuesta = excel.MergueUsuarios()
