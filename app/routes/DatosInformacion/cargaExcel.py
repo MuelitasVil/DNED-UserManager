@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, abort, redirect, url_for, send_file, flash, session
 from openpyxl import Workbook, load_workbook
-from app.services.excel.excel.excelManager import ExcelManager
+from app.services.excel.excel.MergeUsers import MergeUsers
+from app.services.excel.excel.fillListaCorreos import fillListaCorreos
 from openpyxl.drawing.image import Image
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -32,7 +33,7 @@ def upload():
         flash('Por favor ingrese su archivo excel para cargas masivas')
         return render_template("DatosInformacion/cargas.html")
     
-    excel = ExcelManager(file = file)
+    excel = fillListaCorreos(file = file)
     respuesta = excel.FilterEstudiantes()
     
     if respuesta != True:
@@ -64,7 +65,7 @@ def Merge():
     #        flash('Por favor ingrese su archivo excel')
     #        return render_template("DatosInformacion/cargas.html")
     
-    excel = ExcelManager(files = list(files.values()))
+    excel = MergeUsers(files = list(files.values()))
     respuesta = excel.MergueUsuarios()
     respuesta = False
     if respuesta != True:
