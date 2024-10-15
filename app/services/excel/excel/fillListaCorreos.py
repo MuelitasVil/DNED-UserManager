@@ -30,11 +30,11 @@ class fillListaCorreos:
         self.bogota = "SEDE BOGOTÁ"
         self.amazona = "SEDE AMAZONÍA"
         self.caribe = "SEDE CARIBE"
-        self.paz = "SEDE DE LA PAZ" 
-        self.manizales = "SEDE MANIZALES"
-        self.medellin = "SEDE MEDELLÍN"
-        self.orinoquia = "SEDE ORINOQUÍA"
-        self.palmira = "SEDE PALMIRA"
+        self.paz = "SEDE DE LA PAZ" # 
+        self.manizales = "SEDE MANIZALES" #
+        self.medellin = "SEDE MEDELLÍN" # 
+        self.orinoquia = "SEDE ORINOQUÍA" #
+        self.palmira = "SEDE PALMIRA" #
         self.tumaco = "SEDE TUMACO"
 
     def FilterEstudiantes(self):
@@ -69,7 +69,7 @@ class fillListaCorreos:
         # Obtener informacion : 
         dict_Of_Sedes = {}
 
-        print("Obtener informacion")
+        print("OBTENIENDO INFORMACION : ")
         for row in range(filaInicial ,cantOfRows):
             
             columnSede = get_column_letter(ArchivoEstudiantes.Sede + 1)
@@ -99,7 +99,12 @@ class fillListaCorreos:
 
             dict_planes[planEstudio].append(correo)
 
-        print((list(dict_Of_Sedes.keys())))
+        print("SEDES EN EL ARCHIVO : ")
+        print(list(dict_Of_Sedes.keys()))
+
+        print("FACULTADES BOGOTA : ")
+        print(list(dict_Of_Sedes["SEDE BOGOTÁ"].keys()))
+
         # Rellenar los excel
         print("Rellenar exceles ")
         for sede in dict_Of_Sedes:
@@ -127,12 +132,12 @@ class fillListaCorreos:
                 for plan in dict_facultad:
                     hojaPlan = woorkbookPLAN.create_sheet(plan)
                     usuariosEstudiantes = dict_facultad[plan]
-                    self.fillListaCorreos(hojaPlan, plan, usuariosEstudiantes, "PLAN", "ESTUDIANTE", sede)
+                    self.fillListaCorreos(hojaPlan, plan, usuariosEstudiantes, "PLAN", "ESTUDIANTE", sede, facultad)
             
             woorkbookSEDE.save(sede + ".xlsx")
             woorkbookPLAN.save("PLANES " + sede + ".xlsx")
         
-    def fillListaCorreos(self, hoja, GroupMember, users, tipoGroup, tipoUser, sede):
+    def fillListaCorreos(self, hoja, GroupMember, users, tipoGroup, tipoUser, sede, facultad = None):
         hoja["A1"] = "Group Email"
         hoja["B1"] = "Member Email"
         hoja["C1"] = "Member Type"
@@ -143,6 +148,9 @@ class fillListaCorreos:
         userGroupMember = self.get_EmailMember(GroupMember, tipoGroup, sede)
         row = self.PropietariosAllListas(hoja, row, userGroupMember)
         row = self.PropietariosSede(hoja, row, userGroupMember, sede)
+        
+        if tipoGroup == "FACULTAD" or tipoGroup == "PLAN":
+            row = self.PropietariosFacultad(hoja,userGroupMember, GroupMember, tipoGroup, sede, row, facultad)
 
         for user in users: 
             hoja["A" + str(row)] = userGroupMember
@@ -192,7 +200,7 @@ class fillListaCorreos:
             
             return acronimo + "_" + sede + "@unal.edu.co"
     
-    def PropietariosAllListas(self, hoja, row, groupMember):
+    def PropietariosAllListas(self, hoja, row, userGroupMember):
     
         listaNacional = [
         "boletin_un@unal.edu.co",
@@ -218,16 +226,16 @@ class fillListaCorreos:
         ]
         
         for owner in listaNacional:
-            hoja["A" + str(row)] = groupMember
+            hoja["A" + str(row)] = userGroupMember
             hoja["B" + str(row)] = owner
             hoja["C" + str(row)] = "USER" 
             hoja["D" + str(row)] = "OWNER"
-            hoja["G" + str(row)] = owner
+            hoja["G" + str(row)] = "OWNER COLOMBIA"
             row += 1 
         
         return row
     
-    def PropietariosSede(self, hoja, row, groupMember, sede):
+    def PropietariosSede(self, hoja, row, userGroupMember, sede):
         lista_sede = []
         
         if sede == self.medellin:
@@ -300,15 +308,64 @@ class fillListaCorreos:
                 "vicesedelapaz@unal.edu.co"
             ]
 
+        if sede == self.bogota:
+            lista_sede = [
+                "divulgaciondrm_bog@unal.edu.co",
+                "talenhumano_bog@unal.edu.co",
+                "reprecarrera_bog@unal.edu.co",
+                "comunicaciones_bog@unal.edu.co",
+                "diracasede_bog@unal.edu.co",
+                "dircultural_bog@unal.edu.co",
+                "notificass_bog@unal.edu.co",
+                "personaladm_bog@unal.edu.co",
+                "postmaster_bog@unal.edu.co",
+                "salarialp_bog@unal.edu.co"
+            ]
+        
         for owner in lista_sede:
-            hoja["A" + str(row)] = groupMember
+            hoja["A" + str(row)] = userGroupMember
             hoja["B" + str(row)] = owner
             hoja["C" + str(row)] = "USER" 
             hoja["D" + str(row)] = "OWNER"
-            hoja["G" + str(row)] = owner
+            hoja["G" + str(row)] = "OWNER SEDE"
             row += 1 
         
         return row
+
+    def PropietariosFacultad(self, hoja, userGroupMember, GroupMember, tipoGroup, sede, row, facultad):
+        
+        if sede != self.bogota:
+            return row
+        
+        if tipoGroup == "PLAN":
+            facultad = facultad
+        
+        if tipoGroup == "FACULTAD":
+            facultad = GroupMember
+
+        FacultadBogota = {
+            "FACULTAD DE CIENCIAS HUMANAS" : "correo_fchbog@unal.edu.co",
+            "FACULTAD DE INGENIERÍA" : "correo_fibog@unal.edu.co",
+            "FACULTAD DE CIENCIAS" : "correo_fcbog@unal.edu.co",
+            "FACULTAD DE ARTES" : "correo_farbog@unal.edu.co",
+            "FACULTAD DE CIENCIAS ECONÓMICAS" : "correo_fcebog@unal.edu.co",
+            "FACULTAD DE MEDICINA" : "correo_fmbog@unal.edu.co ",
+            "FACULTAD DE DERECHO, CIENCIAS POLÍTICAS Y SOCIALES" : "correo_fdbog@unal.edu.co",
+            "FACULTAD DE MEDICINA VETERINARIA Y DE ZOOTECNIA" : "correo_fmvbog@unal.edu.co",
+            "FACULTAD DE CIENCIAS AGRARIAS" : "correo_fcabog@unal.edu.co",
+            "FACULTAD DE ENFERMERÍA" : "correo_febog@unal.edu.co",
+            "FACULTAD DE ODONTOLOGÍA" : "correo_fobog@unal.edu.co"
+        }
+
+        hoja["A" + str(row)] = userGroupMember
+        hoja["B" + str(row)] = FacultadBogota[facultad]
+        hoja["C" + str(row)] = "USER" 
+        hoja["D" + str(row)] = "OWNER"
+        hoja["G" + str(row)] = "OWNER SEDE"
+        row += 1
+
+        return row 
+        
 
     # ------------- Manejo de excel ----------------------------------
 
