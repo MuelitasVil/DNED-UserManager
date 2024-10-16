@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, abort, redirect, url_for, send_file, flash, session
 from openpyxl import Workbook, load_workbook
 from app.services.excel.excel.MergeUsers import MergeUsers
-from app.services.excel.excel.fillListaCorreos import fillListaCorreos
+from app.services.excel.excel.fillListas.CorreosEstudiantes import CorreosEstudiantes
 from openpyxl.drawing.image import Image
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -19,8 +19,8 @@ def Download_FileDatos():
     return send_file(PATH, as_attachment=True)
 '''
 
-@carga.route('/Create-csv', methods = ["POST"])
-def upload():
+@carga.route('/correos-estudiantes', methods = ["POST"])
+def uploadEstudiantes():
     file = request.files['uploadFile']
 
     if not file:
@@ -33,7 +33,31 @@ def upload():
         flash('Por favor ingrese su archivo excel para cargas masivas')
         return render_template("DatosInformacion/cargas.html")
     
-    excel = fillListaCorreos(file = file)
+    excel = CorreosEstudiantes(file = file)
+    respuesta = excel.FilterEstudiantes()
+    
+    if respuesta != True:
+        flash("Se han creado los csv")    
+        return render_template("DatosInformacion/cargas.html")    
+    
+    session['sync'] = False
+    return redirect(url_for("carga.subir"))
+
+@carga.route('/correos-docentes-administrativos', methods = ["POST"])
+def uploadProfesores():
+    file = request.files['uploadFile-docentes']
+
+    if not file:
+        flash('Por favor ingrese su archivo')
+        return render_template("DatosInformacion/cargas.html")
+     
+    fileName = secure_filename(file.filename)
+
+    if not VerifyExel(fileName):
+        flash('Por favor ingrese su archivo excel para cargas masivas')
+        return render_template("DatosInformacion/cargas.html")
+    
+    excel = CorreosEstudiantes(file = file)
     respuesta = excel.FilterEstudiantes()
     
     if respuesta != True:

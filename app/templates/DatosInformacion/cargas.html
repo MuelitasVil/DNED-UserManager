@@ -93,10 +93,30 @@
         </div>
 
         <div class="card" style="width: 100%;">
-            <form class="border p-3 text-black text-center" action="/Create-csv" method="POST" enctype="multipart/form-data"> <!-- Agregamos la clase 'card' para el marco y 'p-3' para el espacio interno -->
+            <form class="border p-3 text-black text-center" action="/correos-estudiantes" method="POST" enctype="multipart/form-data"> <!-- Agregamos la clase 'card' para el marco y 'p-3' para el espacio interno -->
                 <div class="mb-3">
                     <label for="uploadFile" class="form-label">Seleccionar archivo</label>
                     <input class="form-control" type="file" id="uploadFile" name="uploadFile" accept=".xlsm,.xlsx">
+                </div>
+                <div class="text-center"> <!-- Alineación al centro -->
+                    <button type="submit" class="btn btn-light">Subir Archivo</button> <!-- Cambié el color del botón a claro para mayor contraste -->
+                </div>
+            </form>
+        </div>
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="m-2">Subir Archivo Docentes (Generar listados)</h2>     
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="width: 100%;">
+            <form class="border p-3 text-black text-center" action="/correos-docentes-administrativos" method="POST" enctype="multipart/form-data"> <!-- Agregamos la clase 'card' para el marco y 'p-3' para el espacio interno -->
+                <div class="mb-3">
+                    <label for="uploadFile" class="form-label">Seleccionar archivo</label>
+                    <input class="form-control" type="file" id="uploadFile" name="uploadFile-docentes" accept=".xlsm,.xlsx">
                 </div>
                 <div class="text-center"> <!-- Alineación al centro -->
                     <button type="submit" class="btn btn-light">Subir Archivo</button> <!-- Cambié el color del botón a claro para mayor contraste -->

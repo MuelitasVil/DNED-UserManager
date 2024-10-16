@@ -1,11 +1,8 @@
 from app.services.excel.utils import getCantOfColumns
 from app.services.excel.excel.archvivosExcel import ArchivosExcel
-from io import StringIO
-import time
 from openpyxl.utils import get_column_letter
-import openpyxl 
 from openpyxl import Workbook, load_workbook
-
+import openpyxl 
 import csv
 
 '''
@@ -16,7 +13,7 @@ Ojo : Es necesario que entienda la estructura del excel para entender las
 siguientes funciones.
 '''
 
-class fillListaCorreos:
+class CorreosEstudiantes:
     def __init__(self, file = None, files = []):
         # Lectura del excel 
         if file != None:
@@ -44,23 +41,33 @@ class fillListaCorreos:
         Sin embargo lo implemente con diccionarios por facilidad
 
         Estructura : 
-        Sedes -> facultades -> planes -> estudiantes
+        Sedes -> facultades -> unidadres -> profesores
 
-        Dict:
+        Dict-Profesores:
         dict = {
             "sede" : {
-                "Facultdad" : {
-                    "Plan1" : ["est1","est2","est3"],
-                    "Plan1" : ["est1","est2","est3"]
+                "Unidad" : {
+                    
                     }
                 }
             }
+
+        Estructura : 
+        Sedes  -> administrativos
+
+        Dict-Administrativos:
+        dict = {
+            "sede" : {
+                }
+            }
+
+
         '''
 
         # Datos : 
 
-        ArchivoEstudiantes = ArchivosExcel.EstudiantesActivos 
-        information = self.excel["ESTUDIANTES ACTIVOS 2024-1S"]
+        ArchivoEstudiantes = ArchivosExcel.Docentes 
+        information = self.excel["Hoja1"]
         cantOfRows = len(list(information.rows))
         filaInicial = self.filaInicial
  
@@ -399,53 +406,3 @@ class fillListaCorreos:
         print("Cantidad de columnas : ")
         print(maxColumns)
 
-
-'''
-Example write in csv
-
- # Abre los archivos CSV en modo de escritura
-        with open(file_users, mode='w', newline='') as file1, open(file_csv, mode='w', newline='') as file2:
-            writerUsers = csv.writer(file1)
-            writerCsv = csv.writer(file2)
-    
-            # Escribe los encabezados de las columnas en ambos archivos
-            writerUsers.writerow(columns)
-            writerCsv.writerow(columsCsv)
-
-            # Itera sobre las filas de datos
-            for row in range(filaInicial, cantOfRows):
-                indexEmail = get_column_letter(2)
-                email = information[indexEmail + str(row)].value
-
-                indexSede = get_column_letter(3)
-                sede = information[indexSede + str(row)].value
-
-                indexFacultad = get_column_letter(4)
-                facultad = information[indexFacultad + str(row)].value
-
-                indexCod_plan = get_column_letter(5)
-                cod_plan = information[indexCod_plan + str(row)].value
-
-                indexPlan = get_column_letter(6)
-                plan = information[indexPlan + str(row)].value
-
-                indexNivel = get_column_letter(6)
-                nivel = information[indexNivel + str(row)].value
-
-                # Filtros
-
-                if sede not in ["SEDE BOGOTÁ"]:
-                    continue
-                
-                if facultad not in ['FACULTAD DE INGENIERÍA']:
-                    continue
-                
-                # Escribe la fila en ambos archivos CSV
-                row_user = [email, sede, facultad, cod_plan, plan, nivel]
-                row_csv = list(infoCsv.values())
-                row_csv[1] = email 
-
-                writerUsers.writerow(row_user)
-                writerCsv.writerow(row_csv)
-    
-'''
