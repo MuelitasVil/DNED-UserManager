@@ -39,6 +39,7 @@ class Docentes:
     Funcion = 5
     UnidadFuncion = 6
     Vinculacion = 7
+    Facultad = 8
 
 class WorkSpace:
     TipoArchivo = "WorkSpace"

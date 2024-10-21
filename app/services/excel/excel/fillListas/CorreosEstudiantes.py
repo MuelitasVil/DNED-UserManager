@@ -1,12 +1,9 @@
 from app.services.excel.utils import getCantOfColumns
 from app.services.excel.excel.archvivosExcel import ArchivosExcel
-from io import StringIO
-import time
-from openpyxl.utils import get_column_letter
-import openpyxl 
+from openpyxl.utils import get_column_letter 
 from openpyxl import Workbook, load_workbook
-
-import csv
+import openpyxl
+import os
 
 '''
 La siguiente clase tendra la funcionalidad de recorrer el excel en el cual se
@@ -22,6 +19,10 @@ class CorreosEstudiantes:
         if file != None:
             self.excel = openpyxl.load_workbook(file)
             self.hojas = self.excel.get_sheet_names()
+
+        self.folder_path = "estudiantes"
+        if not os.path.exists(self.folder_path):
+            os.makedirs(self.folder_path)
 
         self.UserFiles = files
         self.columnaInicial = 1
@@ -60,6 +61,8 @@ class CorreosEstudiantes:
         # Datos : 
 
         ArchivoEstudiantes = ArchivosExcel.EstudiantesActivos 
+        
+        # OJO : HOJAS DE EXCEL HARDCODEADAS
         information = self.excel["ESTUDIANTES ACTIVOS 2024-1S"]
         cantOfRows = len(list(information.rows))
         filaInicial = self.filaInicial
@@ -78,15 +81,15 @@ class CorreosEstudiantes:
             if sede not in dict_Of_Sedes:
                 dict_Of_Sedes[sede] = {}
             
-            dict_Of_Facultaes = dict_Of_Sedes[sede]
+            dict_Of_Facultades = dict_Of_Sedes[sede]
             
             columFacultad = get_column_letter(ArchivoEstudiantes.Facultad + 1)
             facultad = str(information[columFacultad + str(row)].value)
 
-            if facultad not in dict_Of_Facultaes:
-                dict_Of_Facultaes[facultad] = {}
+            if facultad not in dict_Of_Facultades:
+                dict_Of_Facultades[facultad] = {}
 
-            dict_planes = dict_Of_Facultaes[facultad]
+            dict_planes = dict_Of_Facultades[facultad]
 
             columnPlanEstudio = get_column_letter(ArchivoEstudiantes.Plan + 1)
             planEstudio = str(information[columnPlanEstudio + str(row)].value)
@@ -133,9 +136,16 @@ class CorreosEstudiantes:
                     hojaPlan = woorkbookPLAN.create_sheet(plan)
                     usuariosEstudiantes = dict_facultad[plan]
                     self.fillListaCorreos(hojaPlan, plan, usuariosEstudiantes, "PLAN", "ESTUDIANTE", sede, facultad)
+
+            # NOTACION PARA GUARDAR ARCHIVOS EN WINDOWS ( EN LINUX CAMBIAR )            
             
-            woorkbookSEDE.save(sede + ".xlsx")
-            woorkbookPLAN.save("PLANES " + sede + ".xlsx")
+            path =  self.folder_path + "\\" + sede
+
+            if not os.path.exists(path):
+                os.makedirs(path)
+            
+            woorkbookSEDE.save(path + "\\" + sede + ".xlsx")
+            woorkbookPLAN.save(path + "\\" + "PLANES " + sede + ".xlsx")
         
     def fillListaCorreos(self, hoja, GroupMember, users, tipoGroup, tipoUser, sede, facultad = None):
         hoja["A1"] = "Group Email"

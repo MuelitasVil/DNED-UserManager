@@ -3,6 +3,7 @@ from app.services.excel.excel.archvivosExcel import ArchivosExcel
 from openpyxl.utils import get_column_letter
 from openpyxl import Workbook, load_workbook
 import openpyxl 
+import os
 import csv
 
 '''
@@ -19,6 +20,10 @@ class CorreosEstudiantes:
         if file != None:
             self.excel = openpyxl.load_workbook(file)
             self.hojas = self.excel.get_sheet_names()
+
+        self.folder_pathDocentes = ""
+        if not os.path.exists(self.folder_path):
+            os.makedirs(self.folder_path)
 
         self.UserFiles = files
         self.columnaInicial = 1
@@ -66,7 +71,7 @@ class CorreosEstudiantes:
 
         # Datos : 
 
-        ArchivoEstudiantes = ArchivosExcel.Docentes 
+        ArchivoDocentesAdministrativos = ArchivosExcel.Docentes 
         information = self.excel["Hoja1"]
         cantOfRows = len(list(information.rows))
         filaInicial = self.filaInicial
@@ -74,46 +79,20 @@ class CorreosEstudiantes:
         #woorkbookOfplans.create_sheet("Informacion General")
         
         # Obtener informacion : 
-        dict_Of_Sedes = {}
+        dict_Of_Docentes = {}
+        dict_Of_Administrativos = {}
 
         print("OBTENIENDO INFORMACION : ")
-        for row in range(filaInicial ,cantOfRows):
+        for row in range(filaInicial, cantOfRows):
             
-            columnSede = get_column_letter(ArchivoEstudiantes.Sede + 1)
-            sede = str(information[columnSede + str(row)].value)
+            columnNombreVinculacion = get_column_letter(ArchivoDocentesAdministrativos.Vinculacion + 1)
+            nombreVinculacion = str(information[columnNombreVinculacion + str(row)].value)
             
-            if sede not in dict_Of_Sedes:
-                dict_Of_Sedes[sede] = {}
-            
-            dict_Of_Facultaes = dict_Of_Sedes[sede]
-            
-            columFacultad = get_column_letter(ArchivoEstudiantes.Facultad + 1)
-            facultad = str(information[columFacultad + str(row)].value)
+            if "DOCENTE" in nombreVinculacion:
+                self.fillDictDocentes(row, dict_Of_Docentes, information)
+            else: 
+                self.fillDictAdministrativos(row, dict_Of_Administrativos, information)
 
-            if facultad not in dict_Of_Facultaes:
-                dict_Of_Facultaes[facultad] = {}
-
-            dict_planes = dict_Of_Facultaes[facultad]
-
-            columnPlanEstudio = get_column_letter(ArchivoEstudiantes.Plan + 1)
-            planEstudio = str(information[columnPlanEstudio + str(row)].value)
-
-            if planEstudio not in dict_planes:
-                dict_planes[planEstudio] = []
-
-            columnCorreo = get_column_letter(ArchivoEstudiantes.Correo + 1)
-            correo = str(information[columnCorreo + str(row)].value)
-
-            dict_planes[planEstudio].append(correo)
-
-        print("SEDES EN EL ARCHIVO : ")
-        print(list(dict_Of_Sedes.keys()))
-
-        print("FACULTADES BOGOTA : ")
-        print(list(dict_Of_Sedes["SEDE BOGOTÁ"].keys()))
-
-        # Rellenar los excel
-        print("Rellenar exceles ")
         for sede in dict_Of_Sedes:
             
             if sede == "SEDE":
@@ -141,9 +120,58 @@ class CorreosEstudiantes:
                     usuariosEstudiantes = dict_facultad[plan]
                     self.fillListaCorreos(hojaPlan, plan, usuariosEstudiantes, "PLAN", "ESTUDIANTE", sede, facultad)
             
-            woorkbookSEDE.save(sede + ".xlsx")
-            woorkbookPLAN.save("PLANES " + sede + ".xlsx")
+            woorkbookSEDE.save("docentes/" + sede + ".xlsx")
+            woorkbookPLAN.save("docentes/" + "PLANES " + sede + ".xlsx")
+    
+    def fillDictDocentes(self, row, dict_Of_Docentes, information):
+            
+            ArchivoDocentesAdministrativos = ArchivosExcel.Docentes
+
+            columnSede = get_column_letter(ArchivoDocentesAdministrativos.Sede + 1)
+            sede = str(information[columnSede + str(row)].value)
+            
+            if sede not in dict_Of_Docentes:
+                dict_Of_Docentes[sede] = {}
+            
+            dict_Of_Facultades = dict_Of_Docentes[sede]
+            
+            columFacultad = get_column_letter(ArchivoDocentesAdministrativos.Facultad + 1)
+            facultad = str(information[columFacultad + str(row)].value)
+
+            if facultad not in dict_Of_Facultades:
+                dict_Of_Docentes[facultad] = {}
+            
+            columUnidad = get_column_letter(ArchivoDocentesAdministrativos.Unidad + 1)
+            unidad = str(information[columUnidad + str(row)].value)
+
+            dict_Of_Unidades = dict_Of_Facultades[facultad]
+            
+            columUnidad = get_column_letter(ArchivoDocentesAdministrativos.Unidad + 1)
+            unidad = str(information[columUnidad + str(row)].value)
+
+            if unidad not in dict_Of_Unidades:
+                dict_Of_Unidades[unidad] = []
+
+            columnCorreo = get_column_letter(ArchivoDocentesAdministrativos.Correo + 1)
+            correo = str(information[columnCorreo + str(row)].value)
+
+            dict_Of_Unidades[unidad].append(correo)
+
+    def fillDictAdministrativos(self, row, dict_Of_Administrativos, information):
         
+        ArchivoDocentesAdministrativos = ArchivosExcel.Docentes
+
+        columnSede = get_column_letter(ArchivoDocentesAdministrativos.Sede + 1)
+        sede = str(information[columnSede + str(row)].value)
+            
+        if sede not in dict_Of_Administrativos:
+            dict_Of_Administrativos[sede] = []
+
+        columnCorreo = get_column_letter(ArchivoDocentesAdministrativos.Correo + 1)
+        correo = str(information[columnCorreo + str(row)].value)
+        
+        dict_Of_Administrativos[sede].append(correo)
+           
     def fillListaCorreos(self, hoja, GroupMember, users, tipoGroup, tipoUser, sede, facultad = None):
         hoja["A1"] = "Group Email"
         hoja["B1"] = "Member Email"
