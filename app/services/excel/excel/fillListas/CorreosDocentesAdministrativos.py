@@ -299,9 +299,9 @@ class CorreosDocentesAdministrativos:
         "dre@unal.edu.co",
         "dned@unal.edu.co",
 
-        # Representacion estudiantil 
-        "estudiantilcsu@unal.edu.co",
-        "estudiantilca@unal.edu.co"
+        # Representacion docente 
+        "profesoralca@unal.edu.co"
+        "profesoralcsu@unal.edu.co"
         ]
         
         for owner in listaNacional:
@@ -348,7 +348,6 @@ class CorreosDocentesAdministrativos:
                 "informa_registro_y_matricula@unal.edu.co",
                 "informa_unimedios@unal.edu.co",
                 "infpersonal_med@unal.edu.co",
-                # Repesentacion estudiantil
             ]
 
         if sede == self.manizales:
@@ -361,8 +360,8 @@ class CorreosDocentesAdministrativos:
                 "personaladm_man@unal.edu.co",
                 "personaldoc_man@unal.edu.co",
                 "saludocup_man@unal.edu.co",
-                # Repesentacion manizales
-            
+                # Repesentacion docentes
+                "repre_sede_man@unal.edu.co"            
             ]
         
         if sede == self.palmira:
