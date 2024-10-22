@@ -18,6 +18,8 @@ class CorreosEstudiantes:
         # Lectura del excel 
         if file != None:
             self.excel = openpyxl.load_workbook(file)
+            print("CREACION CLASE DE CREACION DE LISTADOS DOCENTES Y ADMNISTRATIVOS")
+            print(self.excel.sheetnames)
             self.hojas = self.excel.get_sheet_names()
 
         self.folder_path = "estudiantes"
@@ -138,7 +140,6 @@ class CorreosEstudiantes:
                     self.fillListaCorreos(hojaPlan, plan, usuariosEstudiantes, "PLAN", "ESTUDIANTE", sede, facultad)
 
             # NOTACION PARA GUARDAR ARCHIVOS EN WINDOWS ( EN LINUX CAMBIAR )            
-            
             path =  self.folder_path + "\\" + sede
 
             if not os.path.exists(path):

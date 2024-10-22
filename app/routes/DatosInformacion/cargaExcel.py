@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, abort, redirect, url_for,
 from openpyxl import Workbook, load_workbook
 from app.services.excel.excel.MergeUsers import MergeUsers
 from app.services.excel.excel.fillListas.CorreosEstudiantes import CorreosEstudiantes
+from app.services.excel.excel.fillListas.CorreosDocentesAdministrativos import CorreosDocentesAdministrativos
 from openpyxl.drawing.image import Image
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -57,8 +58,8 @@ def uploadProfesores():
         flash('Por favor ingrese su archivo excel para cargas masivas')
         return render_template("DatosInformacion/cargas.html")
     
-    excel = CorreosEstudiantes(file = file)
-    respuesta = excel.FilterEstudiantes()
+    excel = CorreosDocentesAdministrativos(file = file)
+    respuesta = excel.FilterDocentesAdministrativos()
     
     if respuesta != True:
         flash("Se han creado los csv")    

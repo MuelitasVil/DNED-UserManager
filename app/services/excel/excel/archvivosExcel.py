@@ -1,7 +1,7 @@
 class EgresadosIndex:    
     TipoArchivo = "Egresados"
     NombreArchivo = "Precenso Egresados - Rector 2024-2027 (1).xlsx"
-    NombreHoja = "Hoja1"
+    NombreHoja = "Hoja1" # VARIA
     DocumentoIdentidad = 0
     Nombres = 1
     Apellidos = 2
@@ -18,7 +18,7 @@ class EgresadosIndex:
 class EstudiantesActivos:
     TipoArchivo = "EstudiantesActivos"
     NombreArchivo = "2024_04_02 Estudiantes activos.xlsx"
-    NombreHoja = "ESTUDIANTES ACTIVOS 2024-1S"
+    NombreHoja = "ESTUDIANTES ACTIVOS 2024-1S" # VARIA
     NombresXApellidos = 0
     Correo = 1
     Sede = 2
@@ -30,7 +30,7 @@ class EstudiantesActivos:
 class Docentes:
     TipoArchivo = "Docentes"
     NombreArchivo = "Listado Docentes y Administrativos 25072024.xlsx"
-    NombreHoja = "Export Worksheet"
+    NombreHoja = "Export Worksheet" # VARIA
     Sede = 0
     ApellidosXNombre = 1
     Correo = 2
@@ -44,7 +44,7 @@ class Docentes:
 class WorkSpace:
     TipoArchivo = "WorkSpace"
     NombreArchivo = "usuarios workspace almacenamiento 01082024.xlsx"
-    NombreHoja = "User_Download_01082024_091650"
+    NombreHoja = "User_Download_01082024_091650" # VARIA
     Nombre = 0
     Apellidos = 1
     Correo = 2
@@ -57,7 +57,7 @@ class Ldap:
     # Ejemplo entrada csv
     # ['uid=rleonc,ou=People,o=unal.edu.co', 'rleonc','Rosalba Leon Castro','52361091', '1', 'rleonc@unal.edu.co', 'bogota']
     TipoArchivo = "Ldap"
-    NombreArchivo = "Export full LDAP.csv"
+    NombreArchivo = "Export full LDAP.csv" 
     TipoUsuario = {
     "1" : "Estudiante",
     "2" : "Docente",

@@ -14,16 +14,22 @@ Ojo : Es necesario que entienda la estructura del excel para entender las
 siguientes funciones.
 '''
 
-class CorreosEstudiantes:
+class CorreosDocentesAdministrativos:
     def __init__(self, file = None, files = []):
         # Lectura del excel 
         if file != None:
             self.excel = openpyxl.load_workbook(file)
+            print("CREACION CLASE DE CREACION DE LISTADOS DOCENTES Y ADMNISTRATIVOS")
+            print(self.excel.sheetnames)
             self.hojas = self.excel.get_sheet_names()
 
-        self.folder_pathDocentes = ""
-        if not os.path.exists(self.folder_path):
-            os.makedirs(self.folder_path)
+        self.folder_pathDocentes = "docentes"
+        if not os.path.exists(self.folder_pathDocentes):
+            os.makedirs(self.folder_pathDocentes)
+
+        self.folder_pathAdministrativos = "admistrativos"
+        if not os.path.exists(self.folder_pathAdministrativos):
+            os.makedirs(self.folder_pathAdministrativos)
 
         self.UserFiles = files
         self.columnaInicial = 1
@@ -39,7 +45,7 @@ class CorreosEstudiantes:
         self.palmira = "SEDE PALMIRA" #
         self.tumaco = "SEDE TUMACO"
 
-    def FilterEstudiantes(self):
+    def FilterDocentesAdministrativos(self):
         
         '''
         Nota : Esta solucion se podria hacer con un arbol binario.
@@ -93,35 +99,10 @@ class CorreosEstudiantes:
             else: 
                 self.fillDictAdministrativos(row, dict_Of_Administrativos, information)
 
-        for sede in dict_Of_Sedes:
-            
-            if sede == "SEDE":
-                continue
-            
-            print("Rellenar excel " + sede)
-            woorkbookSEDE = Workbook()
-            woorkbookPLAN = Workbook()
-            hojaSede = woorkbookSEDE.create_sheet(sede)
-
-            dict_sede = dict_Of_Sedes[sede]
-            usuariosSede = list(dict_sede.keys())
-            
-            self.fillListaCorreos(hojaSede, sede, usuariosSede, "SEDE", "FACULTAD", sede)
-            
-            for facultad in dict_sede:
-                hojaFacultad = woorkbookSEDE.create_sheet(facultad)
-                dict_facultad = dict_sede[facultad]
-                
-                usuariosFacultad = list(dict_facultad.keys())
-                self.fillListaCorreos(hojaFacultad, facultad, usuariosFacultad, "FACULTAD", "PLAN", sede)
-
-                for plan in dict_facultad:
-                    hojaPlan = woorkbookPLAN.create_sheet(plan)
-                    usuariosEstudiantes = dict_facultad[plan]
-                    self.fillListaCorreos(hojaPlan, plan, usuariosEstudiantes, "PLAN", "ESTUDIANTE", sede, facultad)
-            
-            woorkbookSEDE.save("docentes/" + sede + ".xlsx")
-            woorkbookPLAN.save("docentes/" + "PLANES " + sede + ".xlsx")
+        print("INCIO GENERACION DE DOCENTES")
+        self.generateExcelDocentes(dict_Of_Docentes)
+        print("INCIO GENERACION DE ADMINISTRATIVOS")
+        self.generateExcelAdministrativos(dict_Of_Administrativos)
     
     def fillDictDocentes(self, row, dict_Of_Docentes, information):
             
@@ -139,15 +120,12 @@ class CorreosEstudiantes:
             facultad = str(information[columFacultad + str(row)].value)
 
             if facultad not in dict_Of_Facultades:
-                dict_Of_Docentes[facultad] = {}
+                dict_Of_Facultades[facultad] = {}
             
             columUnidad = get_column_letter(ArchivoDocentesAdministrativos.Unidad + 1)
             unidad = str(information[columUnidad + str(row)].value)
 
             dict_Of_Unidades = dict_Of_Facultades[facultad]
-            
-            columUnidad = get_column_letter(ArchivoDocentesAdministrativos.Unidad + 1)
-            unidad = str(information[columUnidad + str(row)].value)
 
             if unidad not in dict_Of_Unidades:
                 dict_Of_Unidades[unidad] = []
@@ -171,8 +149,74 @@ class CorreosEstudiantes:
         correo = str(information[columnCorreo + str(row)].value)
         
         dict_Of_Administrativos[sede].append(correo)
-           
-    def fillListaCorreos(self, hoja, GroupMember, users, tipoGroup, tipoUser, sede, facultad = None):
+
+    def generateExcelDocentes(self, dict_Of_Docentes):
+        for sede in dict_Of_Docentes:
+            
+            if sede == "SEDE":
+                continue
+            
+            
+            print("Rellenar excel " + sede)
+
+            woorkbookSEDE = Workbook()
+            woorkbookUNIDAD = Workbook()
+            
+            hojaSede = woorkbookSEDE.create_sheet(sede)
+
+            dict_sede = dict_Of_Docentes[sede]
+
+            # INSETAR SEDE AL INCIO PARA REUSAR FUNCIONES DE ESTUDIANTES
+            sede = "SEDE " + sede.strip()
+
+            usuariosSede = list(dict_sede.keys())
+    
+            self.fillListaCorreos(hojaSede, sede, usuariosSede, "SEDE", "FACULTAD", sede, "DOCENTE")
+            
+            for facultad in dict_sede:
+                hojaFacultad = woorkbookSEDE.create_sheet(facultad)
+                dict_facultad = dict_sede[facultad]
+                
+                usuariosFacultad = list(dict_facultad.keys())
+                self.fillListaCorreos(hojaFacultad, facultad, usuariosFacultad, "FACULTAD", "UNIDAD", sede, "DOCENTE")
+
+                for plan in dict_facultad:
+                    hojaPlan = woorkbookUNIDAD.create_sheet(plan)
+                    usuariosEstudiantes = dict_facultad[plan]
+                    self.fillListaCorreos(hojaPlan, plan, usuariosEstudiantes, "UNIDAD", "DOCENTE", sede,"DOCENTE", facultad)
+            
+            # NOTACION PARA GUARDAR ARCHIVOS EN WINDOWS ( EN LINUX CAMBIAR )            
+            path =  self.folder_pathDocentes + "\\" + sede
+
+            if not os.path.exists(path):
+                os.makedirs(path)
+            
+            woorkbookSEDE.save(path + "\\" + sede + ".xlsx")
+            woorkbookUNIDAD.save(path + "\\" + "UNIDADES " + sede + ".xlsx")
+    
+    def generateExcelAdministrativos(self, dict_Of_Administrativos):
+        for sede in dict_Of_Administrativos:
+            if sede == "SEDE":
+                continue
+
+            woorkbookSEDE = Workbook()
+            hojaSede = woorkbookSEDE.create_sheet(sede)
+
+            usuariosSede = dict_Of_Administrativos[sede]
+
+            # INSETAR SEDE AL INCIO PARA REUSAR FUNCIONES DE ESTUDIANTES
+            sede = "SEDE " + sede.strip()
+    
+            self.fillListaCorreos(hojaSede, sede, usuariosSede, "SEDE", "ADMINISTRATIVO", sede, "ADMINISTRATIVO")
+
+            path =  self.folder_pathAdministrativos + "\\" + sede
+
+            if not os.path.exists(path):
+                os.makedirs(path)
+            
+            woorkbookSEDE.save(path + "\\" + sede + ".xlsx")
+            
+    def fillListaCorreos(self, hoja, GroupMember, users, tipoGroup, tipoUser, sede, tipoArchivo, facultad = None):
         hoja["A1"] = "Group Email"
         hoja["B1"] = "Member Email"
         hoja["C1"] = "Member Type"
@@ -180,23 +224,23 @@ class CorreosEstudiantes:
         hoja["G1"] = "Member NAME"
 
         row = 2
-        userGroupMember = self.get_EmailMember(GroupMember, tipoGroup, sede)
+        userGroupMember = self.get_EmailMember(GroupMember, tipoGroup, sede, tipoArchivo)
         row = self.PropietariosAllListas(hoja, row, userGroupMember)
         row = self.PropietariosSede(hoja, row, userGroupMember, sede)
         
-        if tipoGroup == "FACULTAD" or tipoGroup == "PLAN":
+        if tipoGroup == "FACULTAD" or tipoGroup == "UNIDAD":
             row = self.PropietariosFacultad(hoja,userGroupMember, GroupMember, tipoGroup, sede, row, facultad)
 
         for user in users: 
             hoja["A" + str(row)] = userGroupMember
-            hoja["B" + str(row)] = self.get_EmailMember(user, tipoUser, sede)
+            hoja["B" + str(row)] = self.get_EmailMember(user, tipoUser, sede, tipoArchivo)
             hoja["C" + str(row)] = "USER" 
             hoja["D" + str(row)] = "MEMBER"
             hoja["G" + str(row)] = user
             row += 1 
             
-    def get_EmailMember(self, user : str, tipoUser : str, sede):
-        if tipoUser == "ESTUDIANTE":
+    def get_EmailMember(self, user : str, tipoUser : str, sede, tipoArchivo : str):
+        if tipoUser == "DOCENTE" or tipoUser == "ADMINISTRATIVO":
             return user
         
         if tipoUser == "SEDE":
@@ -205,7 +249,7 @@ class CorreosEstudiantes:
             # "[SEDE, BOGOTA]"
             sede = sede[1][:3].lower()
             # "bog"
-            return "estudiante_" + sede + "@unal.edu.co"
+            return tipoArchivo.lower() + "_" + sede + "@unal.edu.co"
 
          # "SEDE BOGOTA"
         sede = sede.split(" ")
@@ -228,7 +272,7 @@ class CorreosEstudiantes:
             
             return "estf" + acronimo + "_" + sede + "@unal.edu.co"
         
-        if tipoUser == "PLAN":
+        if tipoUser == "UNIDAD":
             for palabra in user:
                 if len(palabra) > 2:
                     acronimo += palabra.capitalize()[:3]
@@ -305,7 +349,6 @@ class CorreosEstudiantes:
                 "informa_unimedios@unal.edu.co",
                 "infpersonal_med@unal.edu.co",
                 # Repesentacion estudiantil
-                "reestudia_med@unal.edu.co"
             ]
 
         if sede == self.manizales:
@@ -319,7 +362,7 @@ class CorreosEstudiantes:
                 "personaldoc_man@unal.edu.co",
                 "saludocup_man@unal.edu.co",
                 # Repesentacion manizales
-                "estudiantilcs_man@unal.edu.co"
+            
             ]
         
         if sede == self.palmira:
@@ -327,7 +370,7 @@ class CorreosEstudiantes:
                 "unnoticias_pal@unal.edu.co",
                 "postmaster_pal@unal.edu.co",
                 # Representacion 
-                "estudiantilcs_pal@unal.edu.co"
+                
             ]
 
         if sede == self.orinoquia:
@@ -372,24 +415,39 @@ class CorreosEstudiantes:
         if sede != self.bogota:
             return row
         
-        if tipoGroup == "PLAN":
+        if tipoGroup == "UNIDAD":
             facultad = facultad
         
         if tipoGroup == "FACULTAD":
             facultad = GroupMember
 
+        
         FacultadBogota = {
             "FACULTAD DE CIENCIAS HUMANAS" : "correo_fchbog@unal.edu.co",
             "FACULTAD DE INGENIERÍA" : "correo_fibog@unal.edu.co",
+            "FACULTAD DE INGENIERIA" : "correo_fibog@unal.edu.co",
             "FACULTAD DE CIENCIAS" : "correo_fcbog@unal.edu.co",
             "FACULTAD DE ARTES" : "correo_farbog@unal.edu.co",
             "FACULTAD DE CIENCIAS ECONÓMICAS" : "correo_fcebog@unal.edu.co",
             "FACULTAD DE MEDICINA" : "correo_fmbog@unal.edu.co ",
             "FACULTAD DE DERECHO, CIENCIAS POLÍTICAS Y SOCIALES" : "correo_fdbog@unal.edu.co",
+            "FACULTAD DE DERECHO, CIENCIAS POLITICAS Y SOCIALES" : "correo_fdbog@unal.edu.co",
             "FACULTAD DE MEDICINA VETERINARIA Y DE ZOOTECNIA" : "correo_fmvbog@unal.edu.co",
+            "FACULTAD DE MEDICINA VETERINARIA Y ZOOTECNICA" : "correo_fmvbog@unal.edu.co",
             "FACULTAD DE CIENCIAS AGRARIAS" : "correo_fcabog@unal.edu.co",
             "FACULTAD DE ENFERMERÍA" : "correo_febog@unal.edu.co",
-            "FACULTAD DE ODONTOLOGÍA" : "correo_fobog@unal.edu.co"
+            "FACULTAD DE ENFERMERIA" : "correo_febog@unal.edu.co",
+            "FACULTAD DE ODONTOLOGÍA" : "correo_fobog@unal.edu.co",
+            "FACULTAD DE ODONTOLOGIA" : "correo_fobog@unal.edu.co",
+            "INSTITUTO DE BIOTECNOLOGÍA - IBUN" : "",
+            "INSTITUTO DE ESTUDIOS POLÍTICOS Y RELACIONES INTERNACIONALES - IEPRI" : "",
+            "INSTITUTO DE ESTUDIOS URBANOS - IEU" : "",
+            "FACULTAD DE CIENCIAS ECONOMICAS" : "",
+            "INSTITUTO DE CIENCIA Y TECNOLOGÍA DE ALIMENTOS - ICTA" : "",
+            "INSTITUTO DE ESTUDIOS AMBIENTALES - IDEA" : "",
+            "INSTITUTO DE GENÉTICA" : "",
+            "INSTITUTO DE ESTUDIOS EN COMUNICACIÓN Y CULTURA - IECO" : ""
+
         }
 
         hoja["A" + str(row)] = userGroupMember
