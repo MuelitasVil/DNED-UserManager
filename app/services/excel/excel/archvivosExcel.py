@@ -19,13 +19,15 @@ class EstudiantesActivos:
     TipoArchivo = "EstudiantesActivos"
     NombreArchivo = "2024_04_02 Estudiantes activos.xlsx"
     NombreHoja = "ESTUDIANTES ACTIVOS 2024-1S" # VARIA
-    NombresXApellidos = 0
-    Correo = 1
-    Sede = 2
-    Facultad = 3
-    CodigoPlan = 4
-    Plan = 5
-    Nivel = 6
+    T_Documento = 0
+    Documento = 1
+    NombresXApellidos = 2
+    Correo = 3
+    Sede = 4
+    Facultad = 5
+    CodigoPlan = 6
+    Plan = 7
+    Nivel = 8
 
 class Docentes:
     TipoArchivo = "Docentes"
