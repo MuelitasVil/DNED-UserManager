@@ -19,25 +19,13 @@ class CorreosEstudiantes:
         # Lectura del excel 
         if file != None:
             self.excel = openpyxl.load_workbook(file)
-            print("CREACION CLASE DE CREACION DE LISTADOS DOCENTES Y ADMNISTRATIVOS")
+            print("HOJAS DEL EXCEL INGRESADO")
             print(self.excel.sheetnames)
             self.hojas = self.excel.get_sheet_names()
 
-        self.folder_path_estudiantes = "estudiantes"
+        self.folder_path_estudiantes = "archivos\\estudiantes"
         if not os.path.exists(self.folder_path_estudiantes):
             os.makedirs(self.folder_path_estudiantes)
-
-        self.folder_path_estudiantes_prototipo = "estudiantes_prototipo"
-        if not os.path.exists(self.folder_path_estudiantes_prototipo):
-            os.makedirs(self.folder_path_estudiantes_prototipo)
-
-        self.folder_path_estudiantes_pregrado = self.folder_path_estudiantes + "\\" + "estudiantes_pregrado"
-        if not os.path.exists(self.folder_path_estudiantes_pregrado):
-            os.makedirs(self.folder_path_estudiantes_pregrado)
-
-        self.folder_path_estudiantes_postgrado = self.folder_path_estudiantes + "\\" + "estudiantes_postgrado"
-        if not os.path.exists( self.folder_path_estudiantes_postgrado):
-            os.makedirs(self.folder_path_estudiantes_postgrado)
 
         self.UserFiles = files
         self.columnaInicial = 1
@@ -101,119 +89,17 @@ class CorreosEstudiantes:
 
             self.fillDictEstudiantes(row, dict_Of_Sedes, information)
             
-            
+            columnNivel = get_column_letter(ArchivoEstudiantes.Nivel + 1)
+            nivel = str(information[columnNivel + str(row)].value) 
             
             if nivel == "PREGRADO":
                 self.fillDictEstudiantes(row, dict_Of_Sedes_pregrado, information)
             else:
                 self.fillDictEstudiantes(row, dict_Of_Sedes_postgrado, information)
 
-        print("GENERACION DE EXCEL ESTUDIANTES GENERALES")
-        self.generateExcelEstudiantes(dict_Of_Sedes_pregrado, "PREGRADO")
         print("GENERACION DE EXCEL ESTUDIANTES PREGRADO PROTOTIPO")
-        self.generateExcelEstudiantes(dict_Of_Sedes_postgrado, "POSGRADO")
-        #print("GENERACION DE EXCEL ESTUDIANTES POSTGRADO")
-        #self.generateExcelEstudiantesFacultad(dict_Of_Sedes_postgrado, "POSGRADO")
-            
-    def generateExcelEstudiantes(self, dict_Of_Sedes, tipo):
-        print("SEDES EN EL ARCHIVO : ")
-        print(list(dict_Of_Sedes.keys()))
+        self.generateExcelEstudiantes(dict_Of_Sedes_postgrado, dict_Of_Sedes_pregrado)
 
-        print("FACULTADES BOGOTA : ")
-        print(list(dict_Of_Sedes["SEDE BOGOTÁ"].keys()))
-
-        # Rellenar los excel
-        print("Rellenar exceles ")
-        for sede in dict_Of_Sedes:
-            
-            if sede == "SEDE":
-                continue
-            
-            print("Rellenar excel " + sede)
-            woorkbookSEDE = Workbook()
-            woorkbookPLAN = Workbook()
-            hojaSede = woorkbookSEDE.create_sheet(sede)
-
-            dict_sede = dict_Of_Sedes[sede]
-            usuariosSede = list(dict_sede.keys())
-            
-            self.fillListaCorreos(hojaSede, sede, usuariosSede, "SEDE", "FACULTAD", sede, tipoEstudiante = tipo)
-            
-            for facultad in dict_sede:
-                hojaFacultad = woorkbookSEDE.create_sheet(facultad)
-                dict_facultad = dict_sede[facultad]
-                
-                usuariosFacultad = list(dict_facultad.keys())
-                self.fillListaCorreos(hojaFacultad, facultad, usuariosFacultad, "FACULTAD", "PLAN", sede, tipoEstudiante = tipo)
-                
-                for plan in dict_facultad:
-                    infoPlan = dict_facultad[plan]
-                    nombrePlan = dict_facultad[plan]['NOMBRE']
-                    hojaPlan = woorkbookPLAN.create_sheet(plan + " | " + nombrePlan)
-                    usuariosEstudiantes = infoPlan['ESTUDIANTES']
-                    self.fillListaCorreos(hojaPlan, plan, usuariosEstudiantes, "PLAN", "ESTUDIANTE", sede, facultad, tipoEstudiante = tipo)
-
-            # NOTACION PARA GUARDAR ARCHIVOS EN WINDOWS ( EN LINUX CAMBIAR )            
-            if tipo == "PREGRADO":
-                path =  self.folder_path_estudiantes_pregrado
-            if tipo == "POSGRADO":
-                path = self.folder_path_estudiantes_postgrado
-
-            path = path + "\\" + sede
-            if not os.path.exists(path):
-                os.makedirs(path)
-            
-            woorkbookSEDE.save(path + "\\" + sede + ".xlsx")
-            woorkbookPLAN.save(path + "\\" + "PLANES " + sede + ".xlsx")
-    
-    def generateExcelEstudiantesFacultad(self, dict_Of_Sedes, tipo):
-        print("SEDES EN EL ARCHIVO : ")
-        print(list(dict_Of_Sedes.keys()))
-
-        print("FACULTADES BOGOTA : ")
-        print(list(dict_Of_Sedes["SEDE BOGOTÁ"].keys()))
-
-        # Rellenar los excel
-        print("Rellenar exceles ")
-        for sede in dict_Of_Sedes:
-            
-            if sede == "SEDE":
-                continue
-            
-            print("Rellenar excel " + sede)
-            woorkbookSEDE = Workbook()
-            hojaSede = woorkbookSEDE.create_sheet(sede)
-
-            dict_sede = dict_Of_Sedes[sede]
-            usuariosSede = list(dict_sede.keys())
-            
-            self.fillListaCorreos(hojaSede, sede, usuariosSede, "SEDE", "FACULTAD", sede)
-            
-            for facultad in dict_sede:
-                hojaFacultad = woorkbookSEDE.create_sheet(facultad)
-                dict_facultad = dict_sede[facultad]
-                
-                usuariosFacultad = list(dict_facultad.keys())
-                row = self.fillListaCorreos(hojaFacultad, facultad, usuariosFacultad, "FACULTAD", "PLAN", sede)
-                
-                for plan in dict_facultad:
-                    infoPlan = dict_facultad[plan]
-                    nombrePlan = dict_facultad[plan]['NOMBRE']
-                    usuariosEstudiantes = infoPlan['ESTUDIANTES']
-                    userPlan = str(plan) + " | " +nombrePlan
-
-                    row = self.fillListaCorreos(hojaFacultad, facultad, usuariosEstudiantes, "FACULTAD", "ESTUDIANTE", sede, facultad, row=row, plan = userPlan)
-
-            # NOTACION PARA GUARDAR ARCHIVOS EN WINDOWS ( EN LINUX CAMBIAR )            
-            if tipo == "POSGRADO":
-                path =  self.folder_path_estudiantes_postgrado
-
-            path = path + "\\" + sede
-            if not os.path.exists(path):
-                os.makedirs(path)
-            
-            woorkbookSEDE.save(path + "\\" + sede + ".xlsx")
-    
     def fillDictEstudiantes(self, row, dict_Of_Sedes, information):
             ArchivoEstudiantes = ArchivosExcel.EstudiantesActivos 
 
@@ -223,16 +109,8 @@ class CorreosEstudiantes:
             if sede not in dict_Of_Sedes:
                 dict_Of_Sedes[sede] = {}
             
-            dict_Of_Niveles = dict_Of_Sedes[sede]
+            dict_Of_Facultades = dict_Of_Sedes[sede]
             
-            columnNivel = get_column_letter(ArchivoEstudiantes.Nivel + 1)
-            nivel = str(information[columnNivel + str(row)].value) 
-
-            if nivel not in dict_Of_Sedes:
-                dict_Of_Niveles[nivel] = {}
-            
-            dict_Of_Facultades = dict_Of_Niveles[nivel]
-
             columFacultad = get_column_letter(ArchivoEstudiantes.Facultad + 1)
             facultad = str(information[columFacultad + str(row)].value)
 
@@ -260,8 +138,98 @@ class CorreosEstudiantes:
             correo = str(information[columnCorreo + str(row)].value)
 
             dict_planes[planEstudio]['ESTUDIANTES'].append(correo)
+        
+    def generateExcelEstudiantes(self, dict_Of_Sedes_postgrado : dict, dict_Of_Sedes_pregrado : dict):
+        print("\nSEDES EN EL ARCHIVO POSGRADO: ")
+        print(list(dict_Of_Sedes_postgrado.keys()))
+
+        print("\nSEDES EN EL ARCHIVO PREGRADO : ")
+        print(list(dict_Of_Sedes_pregrado.keys()))
+
+        # Rellenar los excel
+        print("\n Rellenar exceles ")
+
+        pregrado = "PREGRADO"
+        posgrado = "POSGRADO"
+
+        for sede in dict_Of_Sedes_pregrado:
+            if sede == "SEDE":
+                continue
+            
+            print("Rellenar excel " + sede)
+            woorkbookFacultad = Workbook()
+            woorkbookSEDE = Workbook()
+            woorkbookPLAN = Workbook()
+
+            hojaSede = woorkbookSEDE.create_sheet(f"{sede}")
+
+            dict_sede_pregado = dict_Of_Sedes_pregrado[sede]
+            facultades = list(dict_sede_pregado.keys())
+            
+            # Rellenar la informacion de las facultades y los planes informacion pregrado
+            self.fillHojasExcel(dict_sede_pregado, woorkbookFacultad, woorkbookPLAN, sede, tipo=pregrado)
+            
+            usuariosSede_posgrado = []
+            if sede in dict_Of_Sedes_postgrado:
+                dict_sede_posgrado = dict_Of_Sedes_postgrado[sede]
+                usuariosSede_posgrado = list(dict_sede_posgrado.keys())
+                # Rellenar la informacion de las facultades y los planes informacion postgrado
+                self.fillHojasExcel(dict_sede_posgrado, woorkbookFacultad, woorkbookPLAN, sede, tipo=posgrado)
+
+            # Rellenar la informacion facultades de la sede
+            self.fillListaCorreos(hojaSede, sede, facultades, "SEDE", "FACULTAD", sede)
+            self.fillHojasFacultades(woorkbookSEDE, sede , facultades)
+            # NOTACION PARA GUARDAR ARCHIVOS EN WINDOWS ( EN LINUX CAMBIAR ) 
+            path = self.folder_path_estudiantes
+
+            path = path + "\\" + sede
+            if not os.path.exists(path):
+                os.makedirs(path)
+            
+            woorkbookSEDE.save(path + "\\" + sede + ".xlsx")
+            woorkbookFacultad.save(path + "\\" + "Facultades " + sede + ".xlsx")
+            woorkbookPLAN.save(path + "\\" + "PLANES " + sede + ".xlsx")
+    
+    def fillHojasFacultades(self, woorkbookSEDE : Workbook, sede : str, facultades : list):
+        
+        for facultad in facultades:
+            hojaFacultad = woorkbookSEDE.create_sheet(facultad) 
+            facultades = []
+            facultadPregrado = self.get_EmailMember(facultad, "FACULTAD", sede, tipoEstudiante="PREGRADO")
+            facultadPosgrado =self.get_EmailMember(facultad, "FACULTAD", sede, tipoEstudiante="POSGRADO")
+
+            facultades = [facultadPregrado, facultadPosgrado]
+            nuevaHoja = hojaFacultad = woorkbookSEDE.create_sheet(f"{facultad}")
+
+            # Observar que aunque se va a llenar las facultades me aprovecho de que al obtener
+            # el usuario estudiantes no lo modifica, por lo tanto puedo pasar directamente los
+            # corros de las facultades
+            self.fillListaCorreos(nuevaHoja, facultad, facultades, "FACULTAD", "ESTUDIANTE", sede)
+
+    def fillHojasExcel(self, dict_sede, woorkbookFacultad, woorkbookPLAN, sede, tipo):
+        for facultad in dict_sede:
+                hojaFacultad = woorkbookFacultad.create_sheet(f"{facultad} {tipo}")
+                dict_facultad = dict_sede[facultad]
+                usuariosFacultad = list(dict_facultad.keys())
+                
+                #print(f"\nFacultade de {tipo}")
+                #print(list(dict_sede.keys()))
+
+                self.fillListaCorreos(hojaFacultad, facultad, usuariosFacultad, "FACULTAD", "PLAN", sede, tipoEstudiante = tipo)
+            
+                for plan in dict_facultad:
+                    infoPlan = dict_facultad[plan]
+                    nombrePlan_pregado = dict_facultad[plan]['NOMBRE']
+                    
+                    hojaPlan_pregado = woorkbookPLAN.create_sheet(plan + " | " + nombrePlan_pregado)
+
+                    usuariosEstudiantes_pregado = infoPlan['ESTUDIANTES']
+                    self.fillListaCorreos(hojaPlan_pregado, plan, usuariosEstudiantes_pregado, "PLAN", "ESTUDIANTE", sede, facultad, tipoEstudiante = tipo)
 
     def fillListaCorreos(self, hoja, GroupMember, users, tipoGroup, tipoUser, sede, facultad = None, row = None, plan = None, tipoEstudiante = None):
+        
+        datosCsv = []
+
         hoja["A1"] = "Group Email"
         hoja["B1"] = "Member Email"
         hoja["C1"] = "Member Type"
@@ -269,35 +237,47 @@ class CorreosEstudiantes:
         hoja["G1"] = "Member NAME"
         hoja["H1"] = "PLAN NAME"
 
+        datosCsv.append(["Group Email", "Member Email", "Member Type", "Member Role"])
+
         userGroupMember = self.get_EmailMember(GroupMember, tipoGroup, sede, tipoEstudiante=tipoEstudiante)
         
         if row == None:
             row = 2
-            row = self.PropietariosAllListas(hoja, row, userGroupMember)
-            row = self.PropietariosSede(hoja, row, userGroupMember, sede)
+            row = self.PropietariosAllListas(hoja, row, userGroupMember, datosCsv)
+            row = self.PropietariosSede(hoja, row, userGroupMember, sede, datosCsv)
         
-            if tipoGroup == "FACULTAD" or tipoGroup == "UNIDAD":
-                row = self.PropietariosFacultad(hoja,userGroupMember, GroupMember, tipoGroup, sede, row, facultad)
+            if tipoGroup == "FACULTAD" or tipoGroup == "UNIDAD" or tipoGroup == "PLAN":
+                row = self.PropietariosFacultad(hoja,userGroupMember, GroupMember, tipoGroup, sede, row, facultad, datosCsv)
         
         for user in users: 
             hoja["A" + str(row)] = userGroupMember
             hoja["B" + str(row)] = self.get_EmailMember(user, tipoUser, sede, tipoEstudiante=tipoEstudiante)
             hoja["C" + str(row)] = "USER" 
             hoja["D" + str(row)] = "MEMBER"
+
             hoja["G" + str(row)] = user
             hoja["H" + str(row)] = plan
             row += 1 
 
-        
+            datosCsv.append(
+                [
+                userGroupMember,
+                self.get_EmailMember(user, tipoUser, sede, tipoEstudiante=tipoEstudiante),
+                "USER", 
+                "MEMBER"]
+                )
 
+        self.generarCsv(sede, tipoGroup, GroupMember, datosCsv, tipoEstudiante)
         return row
             
     def get_EmailMember(self, user : str, tipoUser : str, sede, tipoEstudiante = None):
         
         if tipoEstudiante == "PREGRADO":
             tipoEstudiante = "pre"
-        else:
+        elif tipoEstudiante == "POSGRADO":
             tipoEstudiante = "pos"
+        else:
+            tipoEstudiante = ""
 
         if tipoUser == "ESTUDIANTE":
             return user
@@ -323,11 +303,11 @@ class CorreosEstudiantes:
                 return f"estf{tipoEstudiante}" + sede + "@unal.edu.co"
 
             acronimo = ""
-            for palabra in user:
+            for palabra in user.split():
                 if len(palabra) > 2:
                     acronimo += palabra.lower()[0]    
             
-            return f"estf{acronimo+tipoEstudiante}"  + "_" + sede + "@unal.edu.co"
+            return f"est{acronimo}{tipoEstudiante}"  + "_" + sede + "@unal.edu.co"
         
         if tipoUser == "PLAN":
              # for palabra in user:
@@ -336,7 +316,7 @@ class CorreosEstudiantes:
             
             return user + "_" + sede + "@unal.edu.co"
     
-    def PropietariosAllListas(self, hoja, row, userGroupMember):
+    def PropietariosAllListas(self, hoja, row : int, userGroupMember : str, datosCsv : list):
     
         listaNacional = [
         "boletin_un@unal.edu.co",
@@ -368,10 +348,18 @@ class CorreosEstudiantes:
             hoja["D" + str(row)] = "OWNER" #OWNER
             hoja["G" + str(row)] = "OWNER COLOMBIA"
             row += 1 
+
+            datosCsv.append(
+                [
+                userGroupMember,
+                owner,
+                "USER", 
+                "OWNER"]
+                )
         
         return row
     
-    def PropietariosSede(self, hoja, row, userGroupMember, sede):
+    def PropietariosSede(self, hoja, row : int, userGroupMember : str, sede : list, datosCsv : list):
         lista_sede = []
         
         if sede == self.medellin:
@@ -464,11 +452,20 @@ class CorreosEstudiantes:
             hoja["C" + str(row)] = "USER" 
             hoja["D" + str(row)] = "OWNER" #OWNER
             hoja["G" + str(row)] = "OWNER SEDE"
+
+            datosCsv.append(
+                [
+                userGroupMember,
+                owner,
+                "USER", 
+                "OWNER"]
+                )
+
             row += 1 
         
         return row
 
-    def PropietariosFacultad(self, hoja, userGroupMember, GroupMember, tipoGroup, sede, row, facultad):
+    def PropietariosFacultad(self, hoja, userGroupMember : str, GroupMember : str, tipoGroup : str, sede : str, row : int, facultad : str, datosCsv : list):
         
         if sede != self.bogota:
             return row
@@ -515,6 +512,14 @@ class CorreosEstudiantes:
         hoja["G" + str(row)] = "OWNER SEDE"
         row += 1
 
+        datosCsv.append(
+                [
+                userGroupMember,
+                FacultadBogota[facultad],
+                "USER", 
+                "OWNER"]
+                )
+
         return row 
         
 
@@ -551,52 +556,75 @@ class CorreosEstudiantes:
         print(maxColumns)
 
 
-'''
-Example write in csv
+#Example write in csv
 
- # Abre los archivos CSV en modo de escritura
-        with open(file_users, mode='w', newline='') as file1, open(file_csv, mode='w', newline='') as file2:
+    def generarCsv(self,sede, tipoGroup, GroupMember, datosCsv, tipoEstudiante): 
+    # Abre los archivos CSV en modo de escritura
+        path = self.folder_path_estudiantes
+        path = f"{path}\\{sede}\\{tipoGroup}-csv\\"
+        if tipoGroup == "FACULTAD" and tipoEstudiante != None:
+            path = path = path + f"{tipoEstudiante}\\"
+        
+        if not os.path.exists(path):
+                os.makedirs(path)
+        
+        path = path + GroupMember + ".csv"
+        with open(path, mode='w', newline='') as file1:
             writerUsers = csv.writer(file1)
-            writerCsv = csv.writer(file2)
-    
-            # Escribe los encabezados de las columnas en ambos archivos
-            writerUsers.writerow(columns)
-            writerCsv.writerow(columsCsv)
-
             # Itera sobre las filas de datos
-            for row in range(filaInicial, cantOfRows):
-                indexEmail = get_column_letter(2)
-                email = information[indexEmail + str(row)].value
-
-                indexSede = get_column_letter(3)
-                sede = information[indexSede + str(row)].value
-
-                indexFacultad = get_column_letter(4)
-                facultad = information[indexFacultad + str(row)].value
-
-                indexCod_plan = get_column_letter(5)
-                cod_plan = information[indexCod_plan + str(row)].value
-
-                indexPlan = get_column_letter(6)
-                plan = information[indexPlan + str(row)].value
-
-                indexNivel = get_column_letter(6)
-                nivel = information[indexNivel + str(row)].value
-
-                # Filtros
-
-                if sede not in ["SEDE BOGOTÁ"]:
-                    continue
-                
-                if facultad not in ['FACULTAD DE INGENIERÍA']:
-                    continue
-                
+            for dato in datosCsv:
                 # Escribe la fila en ambos archivos CSV
-                row_user = [email, sede, facultad, cod_plan, plan, nivel]
-                row_csv = list(infoCsv.values())
-                row_csv[1] = email 
-
-                writerUsers.writerow(row_user)
-                writerCsv.writerow(row_csv)
+                writerUsers.writerow(dato)
     
+
 '''
+    def generateExcelEstudiantesFacultad(self, dict_Of_Sedes, tipo):
+        print("SEDES EN EL ARCHIVO : ")
+        print(list(dict_Of_Sedes.keys()))
+
+        print("FACULTADES BOGOTA : ")
+        print(list(dict_Of_Sedes["SEDE BOGOTÁ"].keys()))
+
+        # Rellenar los excel
+        print("Rellenar exceles ")
+        for sede in dict_Of_Sedes:
+            
+            if sede == "SEDE":
+                continue
+            
+            print("Rellenar excel " + sede)
+            woorkbookSEDE = Workbook()
+            hojaSede = woorkbookSEDE.create_sheet(sede)
+
+            dict_sede = dict_Of_Sedes[sede]
+            usuariosSede = list(dict_sede.keys())
+            
+            self.fillListaCorreos(hojaSede, sede, usuariosSede, "SEDE", "FACULTAD", sede)
+            
+            for facultad in dict_sede:
+                hojaFacultad = woorkbookSEDE.create_sheet(facultad)
+                dict_facultad = dict_sede[facultad]
+                
+                usuariosFacultad = list(dict_facultad.keys())
+                row = self.fillListaCorreos(hojaFacultad, facultad, usuariosFacultad, "FACULTAD", "PLAN", sede)
+                
+                for plan in dict_facultad:
+                    infoPlan = dict_facultad[plan]
+                    nombrePlan = dict_facultad[plan]['NOMBRE']
+                    usuariosEstudiantes = infoPlan['ESTUDIANTES']
+                    userPlan = str(plan) + " | " +nombrePlan
+
+                    row = self.fillListaCorreos(hojaFacultad, facultad, usuariosEstudiantes, "FACULTAD", "ESTUDIANTE", sede, facultad, row=row, plan = userPlan)
+
+            # NOTACION PARA GUARDAR ARCHIVOS EN WINDOWS ( EN LINUX CAMBIAR )            
+            if tipo == "POSGRADO":
+                path =  self.folder_path_estudiantes_postgrado
+
+            path = path + "\\" + sede
+            if not os.path.exists(path):
+                os.makedirs(path)
+            
+            woorkbookSEDE.save(path + "\\" + sede + ".xlsx")
+    
+    '''
+    

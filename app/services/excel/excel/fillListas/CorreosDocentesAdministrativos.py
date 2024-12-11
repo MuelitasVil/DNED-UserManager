@@ -23,23 +23,23 @@ class CorreosDocentesAdministrativos:
             print(self.excel.sheetnames)
             self.hojas = self.excel.get_sheet_names()
 
-        self.folder_pathDocentesPlanta = "docentes_planta"
+        self.folder_pathDocentesPlanta = "archivos\\docentes_planta"
         if not os.path.exists(self.folder_pathDocentesPlanta):
             os.makedirs(self.folder_pathDocentesPlanta)
 
-        self.folder_pathDocentes = "docentes"
+        self.folder_pathDocentes = "archivos\\docentes"
         if not os.path.exists(self.folder_pathDocentes):
             os.makedirs(self.folder_pathDocentes)
 
-        self.folder_pathDocentesOcasional = "docentes_ocasional"
+        self.folder_pathDocentesOcasional = "archivos\\docentes_ocasional"
         if not os.path.exists(self.folder_pathDocentesOcasional):
             os.makedirs(self.folder_pathDocentesOcasional)
 
-        self.folder_pathDocentesOcasionalPrototipo = "docentes_ocasional_prototipo"
+        self.folder_pathDocentesOcasionalPrototipo = "archivos\\docentes_ocasional_prototipo"
         if not os.path.exists(self.folder_pathDocentesOcasionalPrototipo):
             os.makedirs(self.folder_pathDocentesOcasionalPrototipo)
 
-        self.folder_pathAdministrativos = "admistrativos"
+        self.folder_pathAdministrativos = "archivos\\admistrativos"
         if not os.path.exists(self.folder_pathAdministrativos):
             os.makedirs(self.folder_pathAdministrativos)
 
