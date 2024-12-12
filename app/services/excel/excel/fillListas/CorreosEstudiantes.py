@@ -267,7 +267,7 @@ class CorreosEstudiantes:
                 "MEMBER"]
                 )
 
-        self.generarCsv(sede, tipoGroup, GroupMember, datosCsv, tipoEstudiante)
+        self.generarCsv(sede, tipoGroup, userGroupMember, datosCsv, tipoEstudiante)
         return row
             
     def get_EmailMember(self, user : str, tipoUser : str, sede, tipoEstudiante = None):
