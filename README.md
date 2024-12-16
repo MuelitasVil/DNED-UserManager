@@ -6,16 +6,11 @@
 
 - **Gestión automatizada de archivos Excel:** Procesa y organiza datos desde archivos `.xlsx` y `.csv`.
 - **Creación y llenado de grupos:** Automatización mediante scripts `.bat` para generar y llenar grupos.
-- **Interfaz de usuario sencilla:** Desarrollado en Flask, lo que permite una experiencia intuitiva para administrar los datos.
-- **API robusta:** Posibilidad de extender funcionalidades para consumir datos a través de endpoints.
-- **Dockerización:** Configuración para ejecutar el proyecto en un entorno de producción con Docker y Docker Compose.
-- **Entorno virtualizado:** Uso de entornos virtuales para gestionar dependencias de manera eficiente.
 
 ## Tecnologías utilizadas
 
-- **Backend:** Flask 3.0.0
+- **Framework:** Flask 3.0.0
 - **Procesamiento de Excel:** OpenPyXL, Pandas
-- **Servidor en producción:** Gunicorn
 - **Autenticación JWT:** PyJWT
 - **HTTP Requests:** HTTPX, Requests
 - **Virtualización:** Docker, Docker Compose
@@ -109,17 +104,6 @@ DNED-UserManager/
 ├── requirements.txt        # Dependencias del proyecto
 └── __init__.py             # Archivo de inicialización del paquete
 ```
-
-## Dependencias principales
-
-Aquí se listan las dependencias clave del proyecto:
-
-- **Flask 3.0.0:** Framework web ligero para Python.
-- **Gunicorn 21.2.0:** Servidor WSGI para producción.
-- **Pandas 2.1.4:** Análisis y manipulación de datos.
-- **OpenPyXL 3.1.2:** Lectura y escritura de archivos Excel.
-- **HTTPX 0.26.0 / Requests 2.31.0:** Para realizar peticiones HTTP.
-- **PyJWT 2.8.0:** Manejo de tokens JWT para autenticación.
 
 Para ver todas las dependencias, consulta el archivo `requirements.txt`.
 
