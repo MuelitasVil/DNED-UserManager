@@ -1,0 +1,14 @@
+# Ignorar ambiente virtual 
+.venv
+# Ignorar deployment
+.deployment
+#Ignore all xlsx files
+*.xlsx
+#Ignore all pdf file
+*.pdf
+#Ignore all pdf file
+*.csv
+#Ignore all pdf file
+*.xls
+#Ignore all pdf file
+*.bat
