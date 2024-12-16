@@ -15,3 +15,6 @@
 
 #Ignore all pdf file
 *.xls
+
+#Ignore all bat file
+*.bat
